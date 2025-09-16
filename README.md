@@ -5,8 +5,8 @@ This project, **Resume Classification using Large Language Models (LLMs)**, aims
 The motivation comes from both the **need for automation in HR systems** and the **challenge of handling multilingual resumes** (English & Arabic).  
 
 The dataset contains resumes in two versions:
-- **English CV dataset** (~300 samples)  
-- **Arabic CV dataset** (~300 samples)  
+- **English CV dataset** (~6800 samples)  
+- **Arabic CV dataset** (~6800 samples)  
 
 Both datasets were preprocessed with cleaning, text normalization, and feature extraction.
 
