@@ -1,0 +1,10 @@
+streamlit
+transformers
+torch
+pandas
+numpy
+matplotlib
+python-docx
+pypdf
+pdfplumber
+pdfminer.six
