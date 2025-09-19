@@ -24,10 +24,8 @@ Additionally:
 ## 📂 Code & Training Files
 You can find the **training and evaluation codes** in the Python files included in this repository:
 
-- `Train_en.py` → English resume classifier training  
-- `Train_ar.py` → Arabic resume classifier training  
-- `app_en.py` → Streamlit web app for English classification  
-- `app_ar.py` → Streamlit web app for Arabic classification  
+- `Resume Classifier Training.ipynb` → English & Arabic resume classifier training  
+- `app-2.py` → Streamlit web app for English & Arabic classification   
 
 ---
 
