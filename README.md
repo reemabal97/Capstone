@@ -67,29 +67,6 @@ The training pipeline is available in:
 
 ---
 
-## 📊 Example Outputs  
-
-### 1. Class Distribution (Pie Plot)  
-Shows the imbalance across categories in the dataset.  
-![Pie Plot](/Users/reemabalharith/CapstonFianl/plots/top7_ar_pie.png) 
-![Pie Plot](/Users/reemabalharith/CapstonFianl/plots/top7_en_pie.png)  
-
-
-### 2. Most Frequent Words (WordCloud)  
-- English resumes  
-![English WordCloud](/Users/reemabalharith/CapstonFianl/plots/wordcloud_en.png)   
-
-### 3. Model Performance (Accuracy Comparison)  
-Comparison of DistilBERT, AraBERT, and baseline models.  
-![Accuracy Comparison](/Users/reemabalharith/CapstonFianl/plots/accuracy_comparison.png)  
-
-### 4. Confusion Matrix (Evaluation)  
-- English model  
-![Confusion Matrix EN](plots/confusion_matrix_en.png)  
-- Arabic model  
-![Confusion Matrix AR](plots/confusion_matrix_ar.png)  
-
----
 
 ## ✅ Results & Conclusion  
 This project successfully built LLM-based systems for multilingual resume classification.  
@@ -112,5 +89,7 @@ This project successfully built LLM-based systems for multilingual resume classi
 
 ## 🙏 Acknowledgments (Optional)  
 This project was developed as part of the **AI Practitioner Diploma – NITA (2025)**, with guidance from **Aramco Digital** mentors and instructors.  
+<img src="https://saudipedia.com/en/saudipediaen/uploads/images/2024/07/24/97286.jpg" alt="NITA Logo" width="350"/>
+<img src="https://www.al-madina.com/uploads/images/2025/04/24/2406064.png" alt="AD Logo" width="200"/>
 
 ---
