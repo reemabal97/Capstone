@@ -63,11 +63,12 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==================== CONFIG ====================
-EN_MODEL_DIR = "llm_model_en"
-AR_MODEL_DIR = "llm_model_ar"
+EN_MODEL_DIR = st.secrets.get("EN_REPO", "llm_model_en")
+AR_MODEL_DIR = st.secrets.get("AR_REPO", "llm_model_ar")
 DEFAULT_TOPK = 5
 DEFAULT_MAXLEN = 256
 os.environ.setdefault("PYTORCH_MPS_HIGH_WATERMARK_RATIO", "0.0")
+
 
 # ==================== HELPERS ====================
 @st.cache_resource(show_spinner=True)
