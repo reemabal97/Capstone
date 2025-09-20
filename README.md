@@ -34,3 +34,26 @@ Clone the repository:
 ```bash
 git clone https://github.com/reemabal97/Resume-Classifier.git
 cd Resume-Classifier
+```
+---
+
+### Install dependencies:
+```
+pip install -r requirements.txt
+```
+---
+
+### Run the Streamlit app
+```
+streamlit run app.py
+```
+----
+## 📂 Project Structure
+```
+.
+├── app.py                        # Streamlit app (English + Arabic)
+├── Resume Classifier Training.ipynb  # Training & evaluation pipeline
+├── requirements.txt              # Dependencies
+├── plots/                        # Visualization images
+├── README.md                     # Project documentation
+```
