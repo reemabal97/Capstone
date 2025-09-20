@@ -78,32 +78,67 @@ os.environ.setdefault("PYTORCH_MPS_HIGH_WATERMARK_RATIO", "0.0")
 
 # ==================== HELPERS ====================
 @st.cache_resource(show_spinner=True)
-def load_artifacts(model_dir: str):
-    tok = AutoTokenizer.from_pretrained(model_dir, use_fast=True)
-    mdl = AutoModelForSequenceClassification.from_pretrained(model_dir)
-    labels_path = os.path.join(model_dir, "labels.json")
+def load_artifacts(model_id_or_dir: str):
+    is_local = os.path.isdir(model_id_or_dir)
+
+    # 1) tokenizer + model  (مع التوكن لو Private)
+    tok = AutoTokenizer.from_pretrained(
+        model_id_or_dir,
+        use_fast=True,
+        use_auth_token=(HF_TOKEN if not is_local else None)
+    )
+    mdl = AutoModelForSequenceClassification.from_pretrained(
+        model_id_or_dir,
+        use_auth_token=(HF_TOKEN if not is_local else None)
+    )
+
+    # 2) id2label من config أو من labels.json
     id2label = None
-    if os.path.exists(labels_path):
-        with open(labels_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        if isinstance(data, dict) and "labels" in data:
-            labels = data["labels"]
-            id2label = {i: str(lbl) for i, lbl in enumerate(labels)}
-        elif isinstance(data, dict) and "id2label" in data:
-            id2label = {int(k): str(v) for k, v in data["id2label"].items()}
-        else:
-            try:
-                id2label = {int(k): str(v) for k, v in data.items()}
-            except Exception:
-                pass
-    if id2label is None and hasattr(mdl.config, "id2label"):
-        id2label = {int(k): str(v) for k, v in mdl.config.id2label.items()}
+    if getattr(mdl.config, "id2label", None):
+        try:
+            id2label = {int(k): str(v) for k, v in mdl.config.id2label.items()}
+        except Exception:
+            id2label = None
+
     if id2label is None:
-        raise FileNotFoundError("labels.json not found or invalid, and no id2label in model config.")
+        data = None
+        try:
+            if is_local:
+                labels_path = os.path.join(model_id_or_dir, "labels.json")
+                if os.path.exists(labels_path):
+                    with open(labels_path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+            else:
+                labels_cached = hf_hub_download(
+                    repo_id=model_id_or_dir,
+                    filename="labels.json",
+                    use_auth_token=HF_TOKEN
+                )
+                with open(labels_cached, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+        except Exception:
+            data = None
+
+        if isinstance(data, dict):
+            if "labels" in data and isinstance(data["labels"], list):
+                id2label = {i: str(lbl) for i, lbl in enumerate(data["labels"])}
+            elif "id2label" in data and isinstance(data["id2label"], dict):
+                id2label = {int(k): str(v) for k, v in data["id2label"].items()}
+            else:
+                # صيغة مباشرة { "0": "ClassA", ... }
+                try:
+                    id2label = {int(k): str(v) for k, v in data.items()}
+                except Exception:
+                    id2label = None
+
+    if id2label is None:
+        raise FileNotFoundError("labels.json غير موجود/غير صالح ولا يوجد id2label في config.")
+
     mdl.config.id2label = id2label
     mdl.config.label2id = {v: k for k, v in id2label.items()}
     mdl.eval()
     return tok, mdl, id2label
+
 
 def pick_device():
     if torch.cuda.is_available(): return torch.device("cuda")
