@@ -9,6 +9,12 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import matplotlib.pyplot as plt
 
+from huggingface_hub import hf_hub_download  # جديد
+HF_TOKEN = st.secrets.get("HF_TOKEN")        # نقرأ التوكن من Secrets
+DEVICE = torch.device("cpu")                 # ثبتيه على CPU في ستريملت كلاود
+torch.set_num_threads(1)
+
+
 # ---------- optional readers ----------
 try:
     from pypdf import PdfReader as PYPDFReader
