@@ -1,0 +1,42 @@
+{
+  "architectures": [
+    "BertForSequenceClassification"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "classifier_dropout": null,
+  "dtype": "float32",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "id2label": {
+    "0": "\u0625\u062f\u0627\u0631\u0629",
+    "1": "\u0645\u0648\u0627\u0631\u062f \u0628\u0634\u0631\u064a\u0629",
+    "2": "\u062a\u0642\u0646\u064a\u0629 \u0645\u0639\u0644\u0648\u0645\u0627\u062a",
+    "3": "\u0645\u0627\u0644\u064a\u0629",
+    "4": "\u062a\u0633\u0648\u064a\u0642",
+    "5": "\u0645\u0628\u064a\u0639\u0627\u062a",
+    "6": "\u062a\u0639\u0644\u064a\u0645"
+  },
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "label2id": {
+    "\u0625\u062f\u0627\u0631\u0629": 0,
+    "\u062a\u0633\u0648\u064a\u0642": 4,
+    "\u062a\u0639\u0644\u064a\u0645": 6,
+    "\u062a\u0642\u0646\u064a\u0629 \u0645\u0639\u0644\u0648\u0645\u0627\u062a": 2,
+    "\u0645\u0627\u0644\u064a\u0629": 3,
+    "\u0645\u0628\u064a\u0639\u0627\u062a": 5,
+    "\u0645\u0648\u0627\u0631\u062f \u0628\u0634\u0631\u064a\u0629": 1
+  },
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "position_embedding_type": "absolute",
+  "transformers_version": "4.56.1",
+  "type_vocab_size": 2,
+  "use_cache": true,
+  "vocab_size": 64000
+}
