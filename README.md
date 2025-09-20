@@ -69,19 +69,19 @@ The training pipeline is available in:
 
 ## 📊 Example Outputs  
 
-### 1. Class Distribution (Bar Plot)  
+### 1. Class Distribution (Pie Plot)  
 Shows the imbalance across categories in the dataset.  
-![Bar Plot](plots/class_distribution.png)  
+![Pie Plot](/Users/reemabalharith/CapstonFianl/plots/top7_ar_pie.png) 
+![Pie Plot](/Users/reemabalharith/CapstonFianl/plots/top7_en_pie.png)  
+
 
 ### 2. Most Frequent Words (WordCloud)  
 - English resumes  
-![English WordCloud](plots/wordcloud_en.png)  
-- Arabic resumes  
-![Arabic WordCloud](plots/wordcloud_ar.png)  
+![English WordCloud](/Users/reemabalharith/CapstonFianl/plots/wordcloud_en.png)   
 
 ### 3. Model Performance (Accuracy Comparison)  
 Comparison of DistilBERT, AraBERT, and baseline models.  
-![Accuracy Comparison](plots/accuracy_comparison.png)  
+![Accuracy Comparison](/Users/reemabalharith/CapstonFianl/plots/accuracy_comparison.png)  
 
 ### 4. Confusion Matrix (Evaluation)  
 - English model  
