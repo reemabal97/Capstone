@@ -1,3 +1,4 @@
+
 # app.py — Unified Streamlit (EN + AR), PDF/TXT/DOCX, Batch CSV, Styled UI
 
 import os, io, re, json, time
@@ -7,10 +8,6 @@ import streamlit as st
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import matplotlib.pyplot as plt
-
-# ---------- enforce CPU + offline to avoid 502 ----------
-os.environ["CUDA_VISIBLE_DEVICES"] = ""      # CPU only
-os.environ["TRANSFORMERS_OFFLINE"] = "1"     # do not download from internet
 
 # ---------- optional readers ----------
 try:
@@ -75,13 +72,8 @@ os.environ.setdefault("PYTORCH_MPS_HIGH_WATERMARK_RATIO", "0.0")
 # ==================== HELPERS ====================
 @st.cache_resource(show_spinner=True)
 def load_artifacts(model_dir: str):
-    """
-    Loads tokenizer + model + id2label from a LOCAL folder only,
-    sets model to CPU and eval mode. Cached across runs.
-    """
-    tok = AutoTokenizer.from_pretrained(model_dir, use_fast=True, local_files_only=True)
-    mdl = AutoModelForSequenceClassification.from_pretrained(model_dir, local_files_only=True)
-
+    tok = AutoTokenizer.from_pretrained(model_dir, use_fast=True)
+    mdl = AutoModelForSequenceClassification.from_pretrained(model_dir)
     labels_path = os.path.join(model_dir, "labels.json")
     id2label = None
     if os.path.exists(labels_path):
@@ -97,19 +89,18 @@ def load_artifacts(model_dir: str):
                 id2label = {int(k): str(v) for k, v in data.items()}
             except Exception:
                 pass
-
     if id2label is None and hasattr(mdl.config, "id2label"):
         id2label = {int(k): str(v) for k, v in mdl.config.id2label.items()}
     if id2label is None:
         raise FileNotFoundError("labels.json not found or invalid, and no id2label in model config.")
-
     mdl.config.id2label = id2label
     mdl.config.label2id = {v: k for k, v in id2label.items()}
-    mdl.to("cpu").eval()
+    mdl.eval()
     return tok, mdl, id2label
 
 def pick_device():
-    # بعد تعطيل CUDA بالأعلى، النتيجة ستكون cpu
+    if torch.cuda.is_available(): return torch.device("cuda")
+    if torch.backends.mps.is_available(): return torch.device("mps")
     return torch.device("cpu")
 
 def read_txt(file) -> str:
@@ -160,7 +151,7 @@ def _pdf_text_with_pdfplumber(file) -> str:
             t = page.extract_text() or ""
             txt_pages.append(t)
     out = "\n".join(txt_pages)
-    return re.sub(r"\s+", " ", out).strip()
+    return re.sub(r"\\s+", " ", out).strip()
 
 def _pdf_text_with_pdfminer(file) -> str:
     if hasattr(file, "read"):
@@ -181,7 +172,7 @@ def pdf_text_arabic(file) -> str:
         txt = ""
     def bad(s: str) -> bool:
         s = (s or "").strip()
-        return (len(s) < 120) or ("ﻼ" in s) or (s.count("\u200f") > 50)
+        return (len(s) < 120) or ("ﻼ" in s) or (s.count("\\u200f") > 50)
     if bad(txt) and _HAS_PLP:
         try:
             if hasattr(file, "seek"): file.seek(0)
@@ -196,7 +187,7 @@ def pdf_text_arabic(file) -> str:
             if len(t3) > len(txt): txt = t3
         except Exception:
             pass
-    return re.sub(r"\s+", " ", txt or "").strip()
+    return re.sub(r"\\s+", " ", txt or "").strip()
 
 def load_file_text(uploaded, lang: str) -> str:
     name = uploaded.name.lower()
@@ -209,10 +200,10 @@ def load_file_text(uploaded, lang: str) -> str:
 
 def normalize_ar(text: str) -> str:
     _map = str.maketrans({"أ":"ا","إ":"ا","آ":"ا","ى":"ي","ؤ":"و","ئ":"ي","ة":"ه"})
-    text = re.sub(r"[\u0617-\u061A\u064B-\u0652]", "", text or "")
+    text = re.sub(r"[\\u0617-\\u061A\\u064B-\\u0652]", "", text or "")
     text = (text or "").translate(_map)
-    text = re.sub(r"[^\u0600-\u06FF0-9a-zA-Z\s%+@\-\.\,]", " ", text)
-    text = re.sub(r"\s+", " ", text).strip()
+    text = re.sub(r"[^\\u0600-\\u06FF0-9a-zA-Z\\s%+@\\-\\.]", " ", text)
+    text = re.sub(r"\\s+", " ", text).strip()
     return text
 
 def predict_text(text: str, tok, mdl, id2label, device, max_len=DEFAULT_MAXLEN, top_k=DEFAULT_TOPK, lang="English"):
@@ -277,24 +268,16 @@ with st.sidebar:
     device = pick_device()
     st.success(f"Device: {device}")
 
-    # -------- lazy load button --------
-    if st.button("Load model"):
-        sel_dir = en_model_dir if lang == "English" else ar_model_dir
-        with st.spinner(f"Loading model from {sel_dir} ..."):
-            tok, mdl, id2label = load_artifacts(sel_dir)
-        st.session_state["tok"] = tok
-        st.session_state["mdl"] = mdl
-        st.session_state["id2label"] = id2label
-        st.success(f"Loaded: {sel_dir}")
-
-# -------- require model loaded --------
-if "tok" not in st.session_state:
-    st.info("⬅️ من القائمة اليسار: اختاري اللغة ثم اضغطي **Load model** لتحميل الموديل.")
+# load model
+try:
+    if lang == "English":
+        tok, mdl, id2label = load_artifacts(en_model_dir)
+    else:
+        tok, mdl, id2label = load_artifacts(ar_model_dir)
+    mdl.to(device)
+except Exception as e:
+    st.error(f"Failed to load model\\n\\n{e}")
     st.stop()
-
-tok = st.session_state["tok"]
-mdl = st.session_state["mdl"]
-id2label = st.session_state["id2label"]
 
 # ==================== TABS ====================
 t1, t2, t3 = st.tabs(["🔮 Predict", "📦 Batch (CSV)", "📊 EDA"])
