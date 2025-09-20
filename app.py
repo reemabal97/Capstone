@@ -261,24 +261,29 @@ with st.sidebar:
     lang = st.radio("Language / اللغة", ["English","Arabic"], horizontal=True)
     st.markdown('<div class="rtl"></div>' if lang=="Arabic" else "", unsafe_allow_html=True)
 
-    en_model_dir = st.text_input("EN model dir", value=EN_MODEL_DIR)
-    ar_model_dir = st.text_input("AR model dir", value=AR_MODEL_DIR)
+    # -------- Sticky Model IDs --------
+    # لو ما فيه قيمة محفوظة، نخليها من Secrets أو الديفولت
+    if "en_repo" not in st.session_state:
+        st.session_state["en_repo"] = EN_MODEL_DIR
+    if "ar_repo" not in st.session_state:
+        st.session_state["ar_repo"] = AR_MODEL_DIR
+
+    # نربط text_input مع session_state مباشرة
+    en_model_dir = st.text_input(
+        "EN model (HF repo id)", 
+        value=st.session_state["en_repo"], 
+        key="en_repo"
+    )
+    ar_model_dir = st.text_input(
+        "AR model (HF repo id)", 
+        value=st.session_state["ar_repo"], 
+        key="ar_repo"
+    )
+
     max_len = st.slider("Max tokens", 64, 512, DEFAULT_MAXLEN, step=32)
     top_k   = st.slider("Top-k", 1, 10, DEFAULT_TOPK)
-    show_bars = st.checkbox("Show probability bars", value=True)
-    device = pick_device()
+    device = torch.device("cpu")  # ستريملت كلاود = CPU
     st.success(f"Device: {device}")
-
-# load model
-try:
-    if lang == "English":
-        tok, mdl, id2label = load_artifacts(en_model_dir)
-    else:
-        tok, mdl, id2label = load_artifacts(ar_model_dir)
-    mdl.to(device)
-except Exception as e:
-    st.error(f"Failed to load model\\n\\n{e}")
-    st.stop()
 
 # ==================== TABS ====================
 t1, t2, t3 = st.tabs(["🔮 Predict", "📦 Batch (CSV)", "📊 EDA"])
