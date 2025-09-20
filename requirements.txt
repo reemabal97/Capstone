@@ -1,0 +1,11 @@
+streamlit
+torch
+transformers
+datasets
+pandas
+numpy
+matplotlib
+wordcloud
+arabic-reshaper
+python-bidi
+PyPDF2
