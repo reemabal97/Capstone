@@ -326,6 +326,24 @@ with st.sidebar:
     device = torch.device("cpu")  # ستريملت كلاود = CPU
     st.success(f"Device: {device}")
 
+    show_bars = st.checkbox("Show probability bars", value=True)
+    
+# ============= LOAD MODEL =============
+try:
+    repo_en = st.session_state["en_repo"]
+    repo_ar = st.session_state["ar_repo"]
+
+    if lang == "English":
+        tok, mdl, id2label = load_artifacts(repo_en)
+    else:
+        tok, mdl, id2label = load_artifacts(repo_ar)
+
+    mdl.to(device)
+except Exception as e:
+    st.error(f"Failed to load model\n\n{e}")
+    st.stop()
+
+
 # ==================== TABS ====================
 t1, t2, t3 = st.tabs(["🔮 Predict", "📦 Batch (CSV)", "📊 EDA"])
 
