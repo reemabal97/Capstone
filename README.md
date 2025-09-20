@@ -87,7 +87,7 @@ This project successfully built LLM-based systems for multilingual resume classi
 
 ---
 
-## 🙏 Acknowledgments (Optional)  
+## 🙏 Acknowledgments
 This project was developed as part of the **AI Practitioner Diploma – NITA (2025)**, with guidance from **Aramco Digital** mentors and instructors.  
 <img src="https://saudipedia.com/en/saudipediaen/uploads/images/2024/07/24/97286.jpg" alt="NITA Logo" width="350"/>
 <img src="https://www.al-madina.com/uploads/images/2025/04/24/2406064.png" alt="AD Logo" width="200"/>
