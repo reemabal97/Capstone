@@ -8,4 +8,6 @@ matplotlib
 wordcloud
 arabic-reshaper
 python-bidi
+python-docx
 PyPDF2
+sentencepiece
